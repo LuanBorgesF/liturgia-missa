@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Livro de Cantos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="catedral" aria-hidden="true"></div>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="mark">Livro de Cantos</span><span class="sub">Grupo Marco e Luan</span></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="biblioteca">Biblioteca</button>
+      <button class="tab-btn" data-tab="missa">Montar Missa</button>
+      <button class="tab-btn" data-tab="imprimir">Imprimir</button>
+      <button class="tab-btn" data-tab="adicionar">Adicionar Música</button>
+    </nav>
+  </div>
+</div>
+
+
+<main class="wrap">
+  <div id="aviso-leitura" class="aviso-leitura" hidden>
+    <strong>Modo leitura.</strong> Este acesso nao tem permissao para gravar no livro, entao nada do que voce mudar aqui fica salvo para o grupo. Consultar os cantos, ver as missas ja montadas e gerar o PDF continuam funcionando normalmente. Para editar, peca acesso de edicao a quem criou o livro.
+  </div>
+  <section class="panel active" id="panel-biblioteca">
+    <div class="lib-controls">
+      <input class="search" type="text" id="lib-search" placeholder="Buscar por título, número ou trecho da letra…">
+      <div class="seg" id="lib-view-seg">
+        <button data-view="momento" class="active">Por momento</button>
+        <button data-view="ordem">Ordem do livro</button>
+      </div>
+    </div>
+    <div id="lib-list"><div class="loading">Carregando cantos…</div></div>
+  </section>
+
+  <section class="panel" id="panel-missa">
+    <div class="missa-select-row">
+      <select id="missa-select"></select>
+      <button class="btn" id="missa-new-btn">+ Nova missa</button>
+      <button class="btn btn-danger btn-sm" id="missa-delete-btn">Excluir</button>
+    </div>
+    <div class="missa-toolbar">
+      <div class="field"><label>Nome da missa</label><input type="text" id="missa-nome"></div>
+      <div class="field"><label>Data</label><input type="date" id="missa-data"></div>
+    </div>
+    <div id="missa-momentos"></div>
+  </section>
+
+  <section class="panel" id="panel-imprimir">
+    <div class="print-controls">
+      <select id="print-missa-select"></select>
+      <label class="toggle-line"><input type="checkbox" id="print-cifra" checked> Mostrar cifra (acordes)</label>
+      <span class="fonte-ctrl" id="fonte-impressao">
+        <span class="rot">Fonte</span>
+        <button type="button" data-fonte="-" title="Diminuir a fonte" aria-label="Diminuir a fonte">A−</button>
+        <span class="pct"></span>
+        <button type="button" data-fonte="+" title="Aumentar a fonte" aria-label="Aumentar a fonte">A+</button>
+      </span>
+      <button class="btn btn-primary" id="print-btn">Salvar PDF</button>
+    </div>
+    <div class="print-preview" id="print-preview"></div>
+  </section>
+
+  <section class="panel" id="panel-adicionar">
+    <div class="add-topo">
+      <div class="next-num" id="add-modo-num">Próximo número previsto: <span class="n" id="next-num-val">—</span></div>
+      <button class="btn btn-ghost btn-sm" id="add-cancelar-edicao" hidden>Cancelar edição</button>
+    </div>
+
+    <div class="card add-card">
+      <div class="add-grid">
+        <div class="field"><label for="add-titulo">Título *</label>
+          <input type="text" id="add-titulo" placeholder="Ex: LOUVOR DA MANHÃ" autocomplete="off">
+        </div>
+        <div class="field"><label for="add-categoria">Momento / categoria *</label>
+          <select id="add-categoria"></select>
+        </div>
+        <div class="field"><label for="add-tom">Tom original</label>
+          <select id="add-tom"></select>
+        </div>
+        <div class="field"><label for="add-ritmo">Ritmo</label>
+          <input type="text" id="add-ritmo" placeholder="Ex: Valseado" autocomplete="off">
+        </div>
+        <div class="field campo-largo"><label for="add-link">De onde veio (link ou anotação, opcional)</label>
+          <input type="url" id="add-link" placeholder="https://…">
+        </div>
+      </div>
+      <div class="field campo-pdf">
+        <label>Carregar de um PDF</label>
+        <div class="pdf-linha">
+          <label class="btn btn-ghost btn-sm" for="add-pdf">Escolher PDF…</label>
+          <input type="file" id="add-pdf" accept="application/pdf,.pdf" hidden>
+          <span class="hint" id="add-pdf-status">Nenhum arquivo escolhido.</span>
+        </div>
+        <p class="hint" style="margin:6px 0 0;">O app lê o texto do PDF e coloca cada acorde na coluna onde ele está no papel — é assim que o livro do grupo foi importado. Serve para PDF com texto; digitalização (foto de página) não tem texto para ler.</p>
+      </div>
+      <div class="field">
+        <label for="add-texto">Letra com a cifra</label>
+        <p class="hint" style="margin:0 0 6px;">Digite ou cole aqui o que vocês já têm — caderno, folha do ensaio, o site que o grupo usa. A cifra fica numa linha e a letra logo abaixo: são os espaços que colocam o acorde em cima da sílaba certa.</p>
+        <textarea id="add-texto" class="mono-input" wrap="off" spellcheck="false" placeholder="D          G      A
+Aqui vai a letra, e o acorde fica em cima da sílaba"></textarea>
+      </div>
+      <label class="toggle-line" style="margin:2px 0 14px;">
+        <input type="checkbox" id="add-padrao" checked>
+        Formatar no padrão do livro (tira sobras de site, marcadores [ ] e tablatura)
+      </label>
+      <div class="add-acoes">
+        <button class="btn btn-primary" id="add-salvar-btn">Salvar no livro</button>
+        <button class="btn btn-ghost" id="add-rascunho-btn">Guardar rascunho</button>
+        <button class="btn btn-ghost" id="add-limpar-btn">Limpar</button>
+      </div>
+      <div id="add-avisos"></div>
+    </div>
+
+    <div class="card add-card" id="add-previa-card" hidden>
+      <div class="previa-head">
+        <h3>Prévia — é assim que vai ficar no livro</h3>
+        <span class="previa-meta" id="add-previa-meta"></span>
+      </div>
+      <pre class="cifra" id="add-preview"></pre>
+    </div>
+
+    <div class="lista-sec">
+      <h3 class="sec-titulo">Rascunhos<span class="conta" id="rascunhos-conta"></span></h3>
+      <div id="rascunhos-list"></div>
+    </div>
+
+    <div class="lista-sec">
+      <h3 class="sec-titulo">Cantos que vocês adicionaram<span class="conta" id="adicionados-conta"></span></h3>
+      <div id="adicionados-list"></div>
+    </div>
+
+    <div class="lista-sec">
+      <h3 class="sec-titulo">Pedidos de liturgia ao Claude</h3>
+      <div class="proc-box" id="proc-box"></div>
+      <div id="pedidos-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="overlay" id="song-overlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 id="sd-titulo"></h2>
+        <div class="meta">
+          <span class="badge-num" id="sd-numero"></span>
+          <span class="chip" id="sd-categoria"></span>
+          <span class="chip" id="sd-ritmo"></span>
+          <span class="chip chip-tom" id="sd-tom"></span>
+        </div>
+        <div class="meta" style="margin-top:6px;">
+          <label for="sd-tom-select" style="margin:0; text-transform:none; font-size:.78rem; font-weight:600; color:var(--ink-dim);">Transpor para</label>
+          <select id="sd-tom-select" class="tom-select"></select>
+          <span class="fonte-ctrl" id="fonte-detalhe">
+            <span class="rot">Fonte</span>
+            <button type="button" data-fonte="-" title="Diminuir a fonte" aria-label="Diminuir a fonte">A−</button>
+            <span class="pct"></span>
+            <button type="button" data-fonte="+" title="Aumentar a fonte" aria-label="Aumentar a fonte">A+</button>
+          </span>
+          <button class="btn btn-ghost btn-sm" id="sd-editar" hidden>Editar</button>
+        </div>
+      </div>
+      <button class="sheet-close" id="sd-close" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="sheet-body"><pre class="cifra" id="sd-corpo"></pre></div>
+    <div class="sheet-foot">
+      <button class="btn btn-ghost btn-sm" id="sd-voltar" hidden>← Voltar à lista</button>
+      <select id="sd-momento-select"></select>
+      <button class="btn btn-primary btn-sm" id="sd-add-btn">Adicionar à missa atual</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="picker-overlay">
+  <div class="sheet" style="max-width:520px;">
+    <div class="sheet-head">
+      <div><h2 id="picker-title" style="font-size:1.1rem;">Escolher canto</h2></div>
+      <button class="sheet-close" id="picker-close" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="sheet-body" style="max-height:none;">
+      <input type="text" id="picker-search" placeholder="Buscar por título, número ou trecho da letra…">
+      <label class="toggle-line" style="margin-top:8px;"><input type="checkbox" id="picker-all-cats"> Ver todas as categorias</label>
+      <div class="picker-list" id="picker-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="confirm-overlay">
+  <div class="sheet sheet-confirm">
+    <div class="sheet-head">
+      <div><h2 id="cf-titulo" style="font-size:1.05rem;">Tem certeza?</h2></div>
+      <button class="sheet-close" id="cf-x" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="sheet-body" style="max-height:none;">
+      <p class="cf-msg" id="cf-msg"></p>
+      <div id="cf-avisos"></div>
+    </div>
+    <div class="sheet-foot cf-foot">
+      <button class="btn btn-ghost" id="cf-cancelar">Cancelar</button>
+      <button class="btn btn-danger" id="cf-ok">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

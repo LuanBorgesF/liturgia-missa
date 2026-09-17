@@ -1,0 +1,438 @@
+:root{
+  --paper:#E8F0F9;
+  --paper-2:#DAE8F5;
+  --paper-3:#C9DCEF;
+  --ink:#1B2A38;
+  --ink-dim:#51687E;
+  --verde:#2F6E8F;
+  --verde-2:#1F4E6B;
+  --vinho:#7B3243;
+  --vinho-2:#5C2431;
+  --ouro:#A5813C;
+  --linha:#BFD4E8;
+  --card:#F7FBFF;
+  --danger:#A5333A;
+  --realce:#CFE4F6;
+  --traco-catedral:#2F6E8F;
+  --shadow: 0 1px 2px rgba(27,42,56,.07), 0 4px 14px rgba(27,42,56,.07);
+  --radius: 10px;
+  --font-display:'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-body:'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#121A22;
+    --paper-2:#17222C;
+    --paper-3:#1E2C38;
+    --ink:#E3ECF5;
+    --ink-dim:#9DB2C6;
+    --verde:#7FB6D4;
+    --verde-2:#A3CDE5;
+    --vinho:#D98A97;
+    --vinho-2:#E3A5AF;
+    --ouro:#D2B26A;
+    --linha:#2A3B49;
+    --card:#16202A;
+    --danger:#E38B8F;
+    --realce:#24384A;
+    --traco-catedral:#7FB6D4;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1B1C16;
+  --paper-2:#242519;
+  --paper-3:#2E301F;
+  --ink:#EDE9D9;
+  --ink-dim:#B4AF98;
+  --verde:#87AB8B;
+  --verde-2:#9FC1A2;
+  --vinho:#D98A97;
+  --vinho-2:#E3A5AF;
+  --ouro:#D2B26A;
+  --linha:#3B3C2C;
+  --card:#212217;
+  --danger:#E38B8F;
+  --realce:#554820;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  padding-inline:16px;
+  padding-block:0;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0;}
+button{font-family:inherit;}
+::selection{background:var(--ouro); color:#fff;}
+.wrap{max-width:920px; margin:0 auto; position:relative; z-index:1;}
+
+
+/* ---------- fundo: a catedral em traço ----------
+   Desenho próprio, em linhas, no estilo gótico da matriz de Vacaria. Fica
+   atrás de tudo (z-index 0 e pointer-events:none, para não pegar clique
+   nenhum) e some na impressão. */
+.catedral{
+  position:fixed; left:50%; bottom:0; transform:translateX(-50%);
+  height:min(74vh, 660px); aspect-ratio:700/862; z-index:0;
+  pointer-events:none; user-select:none;
+  background-color:var(--traco-catedral);
+  -webkit-mask-image:url(assets/catedral.png); mask-image:url(assets/catedral.png);
+  -webkit-mask-size:contain; mask-size:contain;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:bottom center; mask-position:bottom center;
+  opacity:.2;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .catedral{opacity:.2;}
+}
+:root[data-theme="dark"] .catedral{opacity:.2;}
+@media print{ .catedral{display:none !important;} }
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+  background:var(--paper); border-bottom:1px solid var(--linha);
+  padding-top:calc(14px + env(safe-area-inset-top,0px));
+}
+.topbar-inner{max-width:920px; margin:0 auto; padding-bottom:10px;}
+.brand{display:flex; align-items:baseline; gap:10px; margin-bottom:12px;}
+.brand .mark{font-family:var(--font-display); font-weight:700; font-size:1.5rem; color:var(--verde-2); letter-spacing:.2px;}
+.brand .sub{font-size:.78rem; color:var(--ink-dim); font-style:italic; font-family:var(--font-display);}
+.tabs{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{
+  flex:0 0 auto; padding:8px 14px; border:none; background:transparent; color:var(--ink-dim);
+  font-size:.86rem; font-weight:600; cursor:pointer; border-radius:8px 8px 0 0; white-space:nowrap;
+  border-bottom:2px solid transparent;
+}
+.tab-btn.active{color:var(--verde-2); border-bottom:2px solid var(--verde);}
+.tab-btn:hover{color:var(--ink);}
+
+main{max-width:920px; margin:0 auto; padding-block:18px 48px; min-height:60vh;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ---------- generic bits ---------- */
+.row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+.muted{color:var(--ink-dim);}
+.small{font-size:.8rem;}
+.hint{font-size:.8rem; color:var(--ink-dim); line-height:1.5;}
+input[type="text"], input[type="url"], input[type="date"], select, textarea{
+  font-family:var(--font-body); font-size:.92rem; color:var(--ink);
+  background:var(--card); border:1px solid var(--linha); border-radius:8px;
+  padding:9px 11px; width:100%;
+}
+textarea{resize:vertical; min-height:64px;}
+input:focus, select:focus, textarea:focus, button:focus-visible{
+  outline:2px solid var(--verde); outline-offset:1px;
+}
+label{font-size:.78rem; font-weight:600; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.04em; display:block; margin-bottom:4px;}
+.field{margin-bottom:14px;}
+.btn{
+  display:inline-flex; align-items:center; gap:6px; cursor:pointer; border:1px solid var(--linha);
+  background:var(--card); color:var(--ink); padding:8px 14px; border-radius:8px; font-size:.86rem; font-weight:600;
+}
+.btn:hover{border-color:var(--verde);}
+.btn-primary{background:var(--verde); border-color:var(--verde); color:#fdfcf6;}
+.btn-primary:hover{background:var(--verde-2); border-color:var(--verde-2);}
+.btn-ghost{background:transparent; border-color:transparent; padding:6px 8px;}
+.btn-danger{color:var(--danger); border-color:var(--danger);}
+/* .btn/.sheet-foot definem display, que venceria o [hidden] do navegador */
+.btn[hidden], .sheet-foot[hidden], .sheet-foot select[hidden]{display:none;}
+.btn-danger.armado{background:var(--danger); color:#fff; border-color:var(--danger);}
+.btn-sm{padding:5px 10px; font-size:.78rem;}
+.btn:disabled{opacity:.5; cursor:not-allowed;}
+.chip{
+  display:inline-flex; align-items:center; font-size:.7rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.04em; padding:2px 8px; border-radius:99px; background:var(--paper-3); color:var(--ink-dim);
+}
+.chip-tom{font-family:var(--font-mono); background:var(--paper-3); color:var(--verde-2); text-transform:none; letter-spacing:0;}
+.tom-select{
+  width:auto; font-family:var(--font-mono); font-size:.78rem; font-weight:600; padding:3px 22px 3px 10px;
+  border-radius:99px; background:var(--paper-3); color:var(--verde-2); border:1px solid var(--linha);
+}
+.badge-num{
+  font-family:var(--font-mono); font-weight:600; font-size:.78rem; color:var(--ouro);
+  min-width:2.4em; text-align:right; font-variant-numeric:tabular-nums;
+}
+.card{background:var(--card); border:1px solid var(--linha); border-radius:var(--radius); box-shadow:var(--shadow);}
+.empty{padding:28px 16px; text-align:center; color:var(--ink-dim); font-style:italic;}
+
+/* ---------- biblioteca ---------- */
+.lib-controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px;}
+.lib-controls .search{flex:1 1 220px;}
+.seg{display:flex; border:1px solid var(--linha); border-radius:8px; overflow:hidden;}
+.seg button{border:none; background:var(--card); color:var(--ink-dim); padding:8px 12px; font-size:.82rem; font-weight:600; cursor:pointer;}
+.seg button.active{background:var(--verde); color:#fdfcf6;}
+.seg button + button{border-left:1px solid var(--linha);}
+
+.group-title{
+  font-family:var(--font-display); font-size:1.05rem; font-weight:600; color:var(--verde-2);
+  margin:22px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--linha);
+  display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+}
+.group-title .count{font-family:var(--font-body); font-size:.72rem; color:var(--ink-dim); font-weight:600;}
+button.group-title{
+  width:100%; background:none; border:none; border-bottom:1px solid var(--linha);
+  padding:0 2px 6px; text-align:left; cursor:pointer; align-items:center;
+}
+button.group-title:hover{color:var(--verde);}
+button.group-title:hover .count{color:var(--ink);}
+button.group-title:focus-visible{outline:2px solid var(--verde); outline-offset:3px; border-radius:4px;}
+.group-title .gt-left{display:flex; align-items:center; gap:9px; min-width:0;}
+.group-title .chev{
+  flex:0 0 auto; width:11px; font-size:.68rem; color:var(--ouro); line-height:1;
+  transition:transform .15s ease;
+}
+button.group-title[aria-expanded="true"] .chev{transform:rotate(90deg);}
+@media (prefers-reduced-motion: reduce){ .group-title .chev{transition:none;} }
+.song-list{display:flex; flex-direction:column; border:1px solid var(--linha); border-radius:var(--radius); overflow:hidden; background:var(--card);}
+.song-list[hidden]{display:none;}
+.song-row{
+  display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid var(--linha);
+  cursor:pointer;
+}
+.song-row:last-child{border-bottom:none;}
+.song-row:hover{background:var(--paper-2);}
+.song-row .song-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.song-row .titulo{font-size:.92rem; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.trecho{font-size:.76rem; color:var(--ink-dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.trecho mark{background:var(--realce); color:inherit; border-radius:2px; padding:0 1px;}
+.song-row .cat-tag{font-size:.7rem; color:var(--ink-dim);}
+.song-row .add-btn{
+  flex:0 0 auto; border:1px solid var(--linha); background:var(--paper); color:var(--verde-2); width:26px; height:26px;
+  border-radius:6px; font-size:1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.song-row .add-btn:hover{background:var(--verde); color:#fff; border-color:var(--verde);}
+
+/* ---------- song detail overlay ---------- */
+.overlay{
+  position:fixed; inset:0; background:rgba(20,20,14,.5); z-index:100; display:none;
+  align-items:flex-start; justify-content:center; padding:5vh 16px; overflow-y:auto;
+}
+.overlay.open{display:flex;}
+/* a prévia é aberta POR CIMA do seletor de cantos, que continua atrás */
+.overlay.acima{z-index:120;}
+.olho-btn{
+  flex:0 0 auto; border:1px solid var(--linha); background:var(--paper); color:var(--ink-dim);
+  width:28px; height:26px; border-radius:6px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; padding:0;
+}
+.olho-btn:hover{background:var(--verde); color:#fff; border-color:var(--verde);}
+.lixo-btn{
+  flex:0 0 auto; border:1px solid var(--linha); background:var(--paper); color:var(--ink-dim);
+  width:28px; height:26px; border-radius:6px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; padding:0;
+}
+.lixo-btn:hover{background:var(--danger); color:#fff; border-color:var(--danger);}
+.lixo-btn svg{display:block; pointer-events:none;}
+.sheet-confirm{max-width:440px;}
+.sheet-confirm .cf-msg{margin:0 0 4px; font-size:.92rem; line-height:1.6;}
+.sheet-confirm .cf-foot{justify-content:flex-end; gap:10px;}
+.olho-btn svg{display:block;}
+.salmo-card{
+  border:1px solid var(--linha); border-left:3px solid var(--ouro); border-radius:8px;
+  background:var(--paper-2); padding:10px 12px; margin-bottom:8px;
+}
+.salmo-card .sc-head{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:6px;}
+.salmo-card .sc-ref{font-family:var(--font-mono); font-size:.8rem; font-weight:700; color:var(--vinho);}
+.salmo-card .sc-dia{font-size:.74rem; color:var(--ink-dim);}
+.salmo-card .sc-refrao{
+  font-weight:600; color:var(--verde-2); font-size:.9rem; margin-bottom:.9em;
+  padding-left:8px; border-left:2px solid var(--verde);
+}
+.salmo-card .sc-estrofe{font-size:.86rem; line-height:1.55; margin-bottom:.9em; white-space:pre-wrap;}
+.salmo-card .sc-estrofe:last-child{margin-bottom:0;}
+.salmo-card .sc-fonte{font-size:.68rem; color:var(--ink-dim); margin-top:8px;}
+.proc-box{
+  border:1px solid var(--linha); border-left:3px solid var(--verde); border-radius:8px;
+  background:var(--paper-2); padding:10px 12px; margin-bottom:14px; font-size:.82rem;
+  color:var(--ink-dim); line-height:1.5;
+}
+.proc-box strong{color:var(--ink);}
+.proc-box .quando{font-family:var(--font-mono); font-size:.76rem;}
+.salmo-vazio{
+  border:1px dashed var(--linha); border-radius:8px; padding:10px 12px; margin-bottom:8px;
+  font-size:.82rem; color:var(--ink-dim); display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+}
+/* O salmo acompanha o mesmo controle A−/A+ da impressão: o tamanho sai de
+   --fonte-impressao, e os filhos usam em/% para escalarem junto. */
+.print-salmo{margin-bottom:14px; font-size:calc(var(--fonte-impressao, .78rem) * 1.1);}
+.print-salmo .ps-ref{font-family:var(--font-mono); font-size:.95em; font-weight:700;}
+.print-salmo .ps-refrao{font-weight:700; margin:.5em 0 .85em; padding-left:8px; border-left:2px solid #7B3243;}
+.print-salmo .ps-estrofe{font-size:1em; line-height:1.5; margin-bottom:.85em; white-space:pre-wrap;}
+.print-salmo .ps-estrofe:last-child{margin-bottom:0;}
+.fonte-ctrl{display:flex; align-items:center; gap:4px;}
+.fonte-ctrl .rot{font-size:.72rem; font-weight:600; color:var(--ink-dim); text-transform:none;}
+.fonte-ctrl button{
+  border:1px solid var(--linha); background:var(--paper); color:var(--verde-2); cursor:pointer;
+  width:26px; height:24px; border-radius:6px; font-weight:700; line-height:1; padding:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.fonte-ctrl button:hover:not(:disabled){background:var(--verde); color:#fff; border-color:var(--verde);}
+.fonte-ctrl button:disabled{opacity:.4; cursor:default;}
+.fonte-ctrl .pct{font-family:var(--font-mono); font-size:.7rem; color:var(--ink-dim); min-width:38px; text-align:center;}
+.sheet{
+  background:var(--card); border-radius:14px; max-width:640px; width:100%; box-shadow:var(--shadow);
+  border:1px solid var(--linha); overflow:hidden;
+}
+.sheet-head{
+  padding:18px 20px; border-bottom:1px solid var(--linha); display:flex; justify-content:space-between; gap:12px; align-items:flex-start;
+  background:linear-gradient(180deg, var(--paper-2), var(--card));
+}
+.sheet-head h2{font-size:1.3rem; line-height:1.25;}
+.sheet-head .meta{margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;}
+.sheet-close{border:none; background:transparent; font-size:1.3rem; color:var(--ink-dim); cursor:pointer; line-height:1; padding:4px;}
+.sheet-body{padding:18px 20px; max-height:60vh; overflow-y:auto;}
+.cifra{
+  /* 'pre' (e não 'pre-wrap'): a quebra é feita no JS, em pares cifra+letra,
+     para o acorde continuar em cima da sílaba certa. */
+  font-family:var(--font-mono); font-size:.82rem; line-height:1.65; white-space:pre;
+  overflow-x:auto; color:var(--ink);
+}
+.cifra .l-chord{color:var(--vinho); font-weight:600;}
+/* refrão: destaque sem mexer na largura do caractere (monoespaçado negrito
+   tem o mesmo avanço), senão a cifra sairia do lugar */
+.l-refrao{color:var(--ouro); font-weight:700; letter-spacing:.08em;}
+.l-ref{font-weight:700;}
+.sheet-foot{padding:14px 20px; border-top:1px solid var(--linha); display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:var(--paper-2);}
+.sheet-foot select{width:auto; flex:1 1 160px;}
+
+/* ---------- montar missa ---------- */
+.missa-toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:18px;}
+.missa-toolbar .field{margin-bottom:0; flex:1 1 180px;}
+.momento-block{margin-bottom:14px;}
+.momento-head{display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:6px;}
+.momento-head h3{font-size:.95rem; color:var(--verde-2);}
+.momento-head .sugestao{font-size:.72rem; color:var(--ink-dim);}
+.missa-song{
+  display:flex; align-items:center; gap:8px; padding:7px 10px; border:1px solid var(--linha); border-radius:8px;
+  background:var(--card); margin-bottom:6px;
+}
+.missa-song .titulo{flex:1; font-size:.88rem; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.missa-song .ord-btns{display:flex; flex-direction:column; gap:0;}
+.missa-song .ord-btns button{border:none; background:transparent; color:var(--ink-dim); cursor:pointer; font-size:.7rem; padding:0 4px; line-height:1.3;}
+.missa-song .ord-btns button:hover{color:var(--verde);}
+.add-momento-btn{
+  border:1px dashed var(--linha); background:transparent; color:var(--ink-dim); border-radius:8px; padding:7px 12px;
+  font-size:.82rem; cursor:pointer; width:100%; text-align:left;
+}
+.add-momento-btn:hover{border-color:var(--verde); color:var(--verde-2);}
+.missa-select-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:14px;}
+.missa-select-row select{width:auto; flex:1 1 200px;}
+
+/* ---------- picker overlay ---------- */
+.picker-list{max-height:44vh; overflow-y:auto; border:1px solid var(--linha); border-radius:8px; margin-top:10px;}
+.picker-row{display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--linha); cursor:pointer;}
+.picker-row:last-child{border-bottom:none;}
+.picker-row:hover{background:var(--paper-2);}
+.picker-row .picker-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:2px;}
+.picker-row .titulo{font-size:.86rem; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+/* ---------- imprimir ---------- */
+.print-controls{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px;}
+.print-controls select{width:auto; flex:1 1 220px;}
+.toggle-line{display:flex; align-items:center; gap:8px; font-size:.86rem;}
+.print-preview{background:#fff; color:#111; border-radius:10px; box-shadow:var(--shadow); padding:28px 30px; border:1px solid var(--linha);}
+.print-preview .p-title{font-family:var(--font-display); font-size:1.5rem; font-weight:700; margin-bottom:2px;}
+.print-preview .p-date{font-size:.85rem; color:#555; margin-bottom:20px;}
+.print-momento{margin-bottom:22px; break-inside:avoid;}
+.print-momento h4{
+  font-family:var(--font-display); font-size:.98rem; text-transform:uppercase; letter-spacing:.05em;
+  color:#5C2431; border-bottom:1px solid #ccc; padding-bottom:4px; margin-bottom:10px;
+}
+.print-song{margin-bottom:16px; break-inside:avoid;}
+.print-song .ps-title{font-weight:700; font-size:.95rem; margin-bottom:2px;}
+.print-song .ps-meta{font-size:.75rem; color:#666; margin-bottom:6px; font-family:var(--font-mono);}
+.print-song .ps-body{font-family:var(--font-mono); font-size:var(--fonte-impressao, .78rem); white-space:pre; line-height:1.55;}
+.print-song .ps-body .l-chord{color:#7B3243; font-weight:600;}
+.print-song .ps-body .l-refrao{color:#8A6A1F; font-weight:700; letter-spacing:.08em;}
+.print-song .ps-body .l-ref{font-weight:700;}
+
+/* ---------- adicionar ---------- */
+.next-num{
+  display:inline-flex; align-items:center; gap:8px; background:var(--paper-3); border-radius:8px; padding:8px 14px; margin-bottom:16px;
+}
+.next-num .n{font-family:var(--font-mono); font-weight:700; font-size:1.1rem; color:var(--ouro);}
+.pedido-row{
+  display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--linha); border-radius:8px; margin-bottom:8px; background:var(--card);
+}
+.pedido-row .info{flex:1; min-width:0;}
+.pedido-row .link{font-size:.78rem; color:var(--ink-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;}
+.status-dot{width:8px; height:8px; border-radius:99px; flex:0 0 auto;}
+.status-pendente{background:var(--ouro);}
+.status-concluido{background:var(--verde);}
+.status-erro{background:var(--danger);}
+
+/* ---------- adicionar: cadastro com prévia ---------- */
+.add-topo{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+.add-topo .next-num{margin-bottom:0;}
+.add-card{padding:18px; margin-bottom:22px;}
+.add-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:0 14px;}
+.add-grid .campo-largo{grid-column:1/-1;}
+/* O texto é colado em monoespaçado de propósito: é a coluna do caractere que
+   posiciona o acorde sobre a letra, então o que se digita aqui é exatamente o
+   que se vê na prévia. Sem quebra automática, senão a cifra "anda". */
+.mono-input{
+  font-family:var(--font-mono); font-size:.82rem; line-height:1.5;
+  white-space:pre; overflow-x:auto; min-height:240px; tab-size:8;
+}
+.add-acoes{display:flex; gap:10px; flex-wrap:wrap; margin-top:2px;}
+.campo-pdf{border:1px dashed var(--linha); border-radius:10px; padding:12px 14px; background:var(--paper-2);}
+.pdf-linha{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.pdf-linha label.btn{margin:0; cursor:pointer;}
+#add-pdf-status{flex:1; min-width:180px;}
+.aviso{
+  border-radius:8px; padding:9px 12px; margin-top:12px; font-size:.82rem; line-height:1.5;
+  background:var(--paper-2); color:var(--ink-dim); border-left:3px solid var(--linha);
+}
+.aviso strong{color:var(--ink);}
+.aviso-atencao{border-left-color:var(--ouro);}
+.aviso-ok{border-left-color:var(--verde);}
+.previa-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+.previa-head h3{margin:0; font-size:1rem;}
+.previa-meta{font-size:.76rem; color:var(--ink-dim); font-family:var(--font-mono);}
+.sec-titulo{margin:0 0 10px; font-size:1rem;}
+.sec-titulo .conta{font-weight:400; color:var(--ink-dim); font-size:.82rem; margin-left:6px;}
+.lista-sec{margin-bottom:24px;}
+.item-row{
+  display:flex; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--linha);
+  border-radius:8px; margin-bottom:8px; background:var(--card);
+}
+.item-row .info{flex:1; min-width:0;}
+.item-row .info strong{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.item-row .sub{font-size:.78rem; color:var(--ink-dim); display:block;}
+.item-row .btn.armado{background:var(--danger); color:#fff; border-color:var(--danger);}
+
+.toast{
+  position:fixed; bottom:calc(18px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%);
+  background:var(--ink); color:var(--paper); padding:10px 18px; border-radius:99px; font-size:.85rem; z-index:200;
+  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; box-shadow:var(--shadow);
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+
+.loading{padding:40px; text-align:center; color:var(--ink-dim); font-style:italic;}
+
+@media print{
+  /* margem fixa: é a largura que colunasImpressao() assume ao quebrar a cifra */
+  @page{ margin:12mm; }
+  body *{visibility:hidden;}
+  #print-root, #print-root *{visibility:visible;}
+  #print-root{position:absolute; left:0; top:0; width:100%; padding:0; margin:0; background:#fff !important;}
+  .print-preview{box-shadow:none; border:none; padding:0;}
+}
+
+@media (max-width:560px){
+  .brand .mark{font-size:1.25rem;}
+  .sheet-head h2{font-size:1.1rem;}
+}
+.aviso-leitura{
+  border:1px solid var(--vinho); border-left-width:4px; background:var(--card);
+  color:var(--ink); border-radius:var(--radius); padding:12px 14px; margin:14px 0 4px;
+  font-size:14px; line-height:1.5; box-shadow:var(--shadow);
+}
+.aviso-leitura strong{ color:var(--vinho); }
